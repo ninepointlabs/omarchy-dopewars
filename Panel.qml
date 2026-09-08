@@ -262,13 +262,20 @@ Panel {
     })
   }
 
-  // Only stand up a private service once the bar is wired in and the shell
-  // really has no shared one; before injection `bar` is null and the lookup
-  // would fail for every panel, spawning one loader per monitor.
+  // The shell mounts one shared service per plugin, but it can appear a
+  // moment after the panels do. Only fall back to a private service if none
+  // has shown up after a grace period, and step aside as soon as one does,
+  // so two monitors never end up playing two different games.
   Service {
     id: localService
-    active: root.bar !== null && root.sharedService === null
+    active: false
   }
+  Timer {
+    interval: 2500
+    running: root.bar !== null && root.sharedService === null && !localService.active
+    onTriggered: if (root.sharedService === null) localService.active = true
+  }
+  onSharedServiceChanged: if (sharedService !== null && localService.active) localService.active = false
 
   // --------------------------------------------------------------- pieces --
 
