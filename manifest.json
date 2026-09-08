@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "ninepointlabs.dopewars",
+  "name": "Dopewars",
+  "version": "0.1.0",
+  "author": "Ninepoint Labs",
+  "license": "GPL-2.0-only",
+  "description": "The classic dopewars (Drug Wars) turn-based trading game, the whole single-player game living in a bar panel. Your game is saved after every move, so take a turn whenever you feel like it.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Dopewars",
+    "description": "Play dopewars from the bar: buy low, sell high, dodge the cops, pay off the loan shark. Auto-saves between turns.",
+    "category": "Fun",
+    "aliases": [
+      "dopewars",
+      "drugwars",
+      "game"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "playerName": "",
+      "showStatus": true
+    },
+    "schema": [
+      {
+        "key": "playerName",
+        "type": "string",
+        "label": "Player name for the high score table",
+        "defaultValue": ""
+      },
+      {
+        "key": "showStatus",
+        "type": "boolean",
+        "label": "Show cash and day next to the icon",
+        "defaultValue": true
+      }
+    ]
+  }
+}
