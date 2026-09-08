@@ -6,6 +6,10 @@ in a bar panel: buy low, sell high, dodge the cops, and pay off the Loan Shark
 before your month is up. The game is saved after every move, so you can close
 the panel, reboot, and take your next turn whenever you feel like it.
 
+<p align="center">
+  <img src="preview.png" width="540" alt="The dopewars panel open from the Omarchy bar: stats, drug prices, trenchcoat, a question from the Bank, and the message log">
+</p>
+
 ## What's in it
 
 Everything single-player dopewars 1.6.2 does, with the same numbers:
