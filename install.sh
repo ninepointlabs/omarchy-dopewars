@@ -10,7 +10,7 @@ dest="$HOME/.config/omarchy/plugins/$id"
 
 mkdir -p "$dest"
 # Only ship what the shell needs; git history, tests and screenshots stay behind.
-for entry in manifest.json Game.js Service.qml BarWidget.qml Panel.qml README.md LICENSE; do
+for entry in manifest.json Game.js About.js Service.qml BarWidget.qml Panel.qml AboutView.qml README.md LICENSE; do
   [[ -e "$src/$entry" ]] && cp -r "$src/$entry" "$dest/"
 done
 

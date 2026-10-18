@@ -6,6 +6,7 @@ import Quickshell.Io
 import qs.Commons
 import qs.Ui
 import "Game.js" as Game
+import "About.js" as About
 
 // The dopewars panel. Laid out like the classic curses screen: a stats box
 // (cash, guns, health, bank, debt, bitches, space), the drugs on sale here,
@@ -14,7 +15,7 @@ import "Game.js" as Game
 // Q>uit?", a yes/no question, a shop, or a fight.
 //
 // Every action goes through the shared Service, which saves after each one.
-// IPC lives on BarWidget.qml.
+// IPC lives on BarWidget.qml. The About page is AboutView.qml.
 Panel {
   id: root
   moduleName: "ninepointlabs.dopewars"
@@ -60,6 +61,29 @@ Panel {
   property bool confirmQuit: false
   property bool confirmAbandon: false
   property string tradeError: ""
+  property bool showAbout: false
+
+  // About page facts read from this plugin's own files, only once it is shown.
+  readonly property string pluginDir: {
+    var text = String(Qt.resolvedUrl("."))
+    if (text.indexOf("file://") === 0) text = decodeURIComponent(text.substring(7))
+    return text.length > 1 && text.charAt(text.length - 1) === "/" ? text.substring(0, text.length - 1) : text
+  }
+  FileView { id: manifestFile; path: root.showAbout ? root.pluginDir + "/manifest.json" : ""; printErrors: false }
+  FileView { id: licenseFile; path: root.showAbout ? root.pluginDir + "/LICENSE" : ""; printErrors: false }
+
+  function showAboutPage() {
+    showAbout = true
+    keyCatcher.forceActiveFocus()
+  }
+
+  function hideAbout() {
+    showAbout = false
+    Qt.callLater(function() {
+      if (!root.hasGame) nameField.forceActiveFocus()
+      else keyCatcher.forceActiveFocus()
+    })
+  }
 
   readonly property var selected: selectedDrug >= 0 && hasGame ? game.drugs[selectedDrug] : null
   readonly property string selectedName: selectedDrug >= 0 ? Game.DRUGS[selectedDrug].name : ""
@@ -180,7 +204,7 @@ Panel {
   }
 
   function handleKey(t) {
-    if (!service || !hasGame) return
+    if (!service || !hasGame || showAbout) return
     var k = t.toLowerCase()
     if (scoresOpen) { if (k === "l" || k === "q") scoresOpen = false; return }
     switch (mode) {
@@ -251,7 +275,7 @@ Panel {
   implicitHeight: 1
 
   onOpenedChanged: {
-    if (!opened) return
+    if (!opened) { showAbout = false; return }
     jetOpen = false
     confirmQuit = false
     confirmAbandon = false
@@ -287,13 +311,14 @@ Panel {
     open: root.opened
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(560))
-    contentHeight: panel.fittedContentHeight(content.implicitHeight, Style.space(860))
+    contentHeight: panel.fittedContentHeight(root.showAbout ? aboutView.implicitHeight : content.implicitHeight, Style.space(860))
 
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
       blocked: amountField.activeFocus || nameField.activeFocus || loanField.activeFocus || bankField.activeFocus
       onReturnRequested: {
+        if (root.showAbout) return
         if (root.mode === "fightdone" && root.service) root.service.fightDone()
         else if (!root.hasGame) root.startGame()
       }
@@ -301,6 +326,7 @@ Panel {
       // "l" (L>ist / L>eave) arrives here as a move to the right.
       onMoveRequested: function(dx, dy) { if (dx > 0) root.handleKey("l") }
       onCloseRequested: {
+        if (root.showAbout) { root.hideAbout(); return }
         if (root.confirmQuit) { root.confirmQuit = false; return }
         if (root.confirmAbandon) { root.confirmAbandon = false; return }
         if (root.jetOpen) { root.jetOpen = false; return }
@@ -312,9 +338,26 @@ Panel {
       onTabRequested: function(direction) { root.switchPanel(direction) }
       onTextKey: function(t) { root.handleKey(t) }
 
+      AboutView {
+        id: aboutView
+        objectName: "aboutView"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        visible: root.showAbout
+        foreground: root.foreground
+        accent: root.accent
+        dim: root.dim
+        fontFamily: root.fontFamily
+        version: About.manifestVersion(manifestFile.loaded ? manifestFile.text() : "")
+        licenseText: licenseFile.loaded ? licenseFile.text() : ""
+        onBackRequested: root.hideAbout()
+      }
+
       Column {
         id: content
         anchors.fill: parent
+        visible: !root.showAbout
         spacing: Style.space(10)
 
         // ------------------------------------------------------- header --
@@ -428,6 +471,20 @@ Panel {
               horizontalPadding: Style.space(8)
               verticalPadding: Style.space(3)
               onClicked: root.confirmAbandon = false
+            }
+
+            Button {
+              objectName: "aboutButton"
+              visible: !root.confirmAbandon
+              iconText: "󰋽"
+              tooltipText: "About Dopewars"
+              foreground: root.foreground
+              accent: root.accent
+              fontFamily: root.fontFamily
+              iconSize: Style.font.body
+              horizontalPadding: Style.space(6)
+              verticalPadding: Style.space(3)
+              onClicked: root.showAboutPage()
             }
           }
         }

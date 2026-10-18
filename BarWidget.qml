@@ -98,6 +98,7 @@ BarWidget {
     function show(): void { root.open() }
     function hide(): void { root.close() }
     function toggle(): void { root.togglePanel() }
+    function about(): void { root.open(); if (panelLoader.item) panelLoader.item.showAboutPage() }
     function isOpen(): string { return root.anyOpened() ? "true" : "false" }
     function status(): string { return root.service && root.service.game ? JSON.stringify({ mode: root.service.mode, turn: root.service.game.turn, cash: root.service.game.cash, at: root.service.game.isAt }) : "{}" }
   }

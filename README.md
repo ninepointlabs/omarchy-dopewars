@@ -76,6 +76,12 @@ prompt line, then the message area.
 - **Scores** shows the high score table (also the `L>ist` key: `l` or →).
 - **Quit** ends the game early and takes your score. **New game** abandons
   the current one.
+- **About**: the 󰋽 button at the top right of the panel (or the `about` IPC
+  call below) shows the version, the licence (readable in place), the credit
+  to the original dopewars, what the game does with your data, and the
+  support address, [help@ninepointlabs.com](mailto:help@ninepointlabs.com),
+  with *Email*, *Copy* and *Copy version details* buttons. Back or Escape
+  returns to the game.
 
 The bar chip shows the day and your cash, and turns accent-coloured while the
 game is waiting on you for something (a cop, a question, a shop).
@@ -93,7 +99,8 @@ In `~/.config/omarchy/shell.json`, on the widget's entry:
 
 - The plugin makes no network connections and runs no shell commands. The
   only subprocess is `mkdir -p` for its own state directory, called with an
-  argument list.
+  argument list. The About page's *Email* button hands a `mailto:` link to
+  your desktop's mail app, and only when you click it.
 - The save file is the only input it trusts from disk, and it doesn't
   trust it much: every field is type- and range-checked on load and a bad
   file is discarded with a warning rather than crashing the shell.
@@ -108,15 +115,19 @@ In `~/.config/omarchy/shell.json`, on the widget's entry:
   Delete it to wipe everything.
 - `Game.js` is the whole game engine, a straight transcription of the C
   server logic. `Service.qml` owns the state and the save file, `Panel.qml`
-  is the screen, `BarWidget.qml` is the chip.
+  is the screen, `BarWidget.qml` is the chip. `AboutView.qml` and
+  `About.js` are the About page.
 - `node test/play.js` plays a few thousand random games and checks the
   bookkeeping invariants after every action.
+- `node test/about.js` checks the About page's facts against the repo and
+  that the plugin still makes no network connections.
 
 ## IPC
 
 ```bash
 omarchy-shell shell summon ninepointlabs.dopewars '{}'   # open
 omarchy-shell shell hide ninepointlabs.dopewars           # close
+qs -p /usr/share/omarchy/shell ipc call ninepointlabs.dopewars about    # open on the About page
 qs -p /usr/share/omarchy/shell ipc call ninepointlabs.dopewars status
 ```
 
