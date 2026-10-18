@@ -3,7 +3,7 @@
   "id": "ninepointlabs.dopewars",
   "name": "Dopewars",
   "version": "0.1.0",
-  "author": "Ninepoint Labs",
+  "author": "Nine Point Labs",
   "license": "GPL-2.0-only",
   "description": "The classic dopewars (Drug Wars) turn-based trading game, the whole single-player game living in a bar panel. Your game is saved after every move, so take a turn whenever you feel like it.",
   "kinds": [
